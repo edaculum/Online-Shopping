@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")  // Frontend URL'sini buraya yazın
+@CrossOrigin(origins = "http://localhost:3002")  // Frontend URL'sini buraya yazın
 @RequestMapping("shopping/kategoriler")
 public class CategoryController {
 

@@ -18,6 +18,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3002")  // Frontend URL'sini buraya yazın
 @RequestMapping("/shopping/musteriler")
 public class CustomerController {
 

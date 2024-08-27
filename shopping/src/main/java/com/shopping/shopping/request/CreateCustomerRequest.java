@@ -1,10 +1,7 @@
 package com.shopping.shopping.request;
 
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,21 +16,21 @@ public class CreateCustomerRequest {
 
     private Long id;
 
-    @NotEmpty(message = "İsim boş olamaz")
+    @NotNull(message = "Ad boş bırakılamaz")
     protected String name;
 
-    @NotEmpty(message = "Soyadı boş olamaz")
+    @NotNull(message = "Soyad boş bırakılamaz")
     private String surname;
 
-    @NotEmpty(message = "Şifre boş olamaz")
+    @NotNull(message = "Şifre boş bırakılamaz")
     @Size(min = 8, message = "Şifre en az 8 karakter uzunluğunda olmalıdır")
     private String password;
 
-    @NotEmpty(message = "E-mail boş olamaz!")
-    @Email(message = "Email geçerli olmalıdır")
+    @NotNull(message = "Email boş bırakılamaz")
+    @Email(message = "Geçerli bir e-posta adresi giriniz")
     private String email;
 
-    @NotEmpty(message = "Adres boş olamaz")
+    @NotNull(message = "Adres kısmı boş bırakılamaz")
     private String adress;
 
 

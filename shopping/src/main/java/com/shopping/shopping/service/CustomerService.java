@@ -42,12 +42,12 @@ public class CustomerService {
     // Yeni müşteri kaydet
     public Customers createdByCustomer(CreateCustomerRequest customerRequest) {
         if(customerRepository.findByEmail(customerRequest.getEmail()).isPresent()){
-            throw new ResourceNotFoundException("Bu email zaten var!");
+            throw new ResourceNotFoundException("*Bu email zaten kayıtlı!");
         }
 
         // Şehir ID'sine göre şehir bulunuyor
         Cities city = cityRepository.findById(customerRequest.getCityId())
-                .orElseThrow(() -> new RuntimeException("Geçersiz şehir ID'si"));
+                .orElseThrow(() -> new RuntimeException("*Geçersiz şehir ID'si"));
 
 
         // Yeni bir Customers nesnesi oluşturuyoruz
@@ -73,11 +73,11 @@ public class CustomerService {
 
         if (customer == null) {
             // ResourceNotFoundException classını çağırıyor
-            throw new ResourceNotFoundException("E-posta veya şifre yanlış.");
+            throw new ResourceNotFoundException("*E-posta veya şifre yanlış.");
         }
 
         if (!customer.getPassword().equals(loginDto.getPassword())) {
-            throw new ResourceNotFoundException("E-posta veya şifre yanlış.");
+            throw new ResourceNotFoundException("*E-posta veya şifre yanlış.");
         }
 
         return customer;

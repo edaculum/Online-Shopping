@@ -14,6 +14,14 @@ import java.util.stream.Collectors;
 public class ProductService {
     private final ProductRepository productRepository;
 
+    // Tüm ürünleri getir
+    public List<ProductDto> getAllProducts() {
+        List<Products> products = productRepository.findAll();
+        return products.stream().map(this::convertToDto).collect(Collectors.toList());
+    }
+
+
+    // Kategoriye göre ürünleri getir
     public List<ProductDto> getProductsByCategory(Long categoryId) {
         List<Products> products = productRepository.findByCategoryId(categoryId);
 
@@ -21,7 +29,7 @@ public class ProductService {
 
     }
 
-
+    // Product entity'sini DTO'ya dönüştür
     private ProductDto convertToDto(Products product) {
         return new ProductDto(
                 product.getId(),
@@ -32,4 +40,5 @@ public class ProductService {
                 product.getImageurl()
         );
     }
+
 }
