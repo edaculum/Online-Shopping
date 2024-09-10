@@ -15,3 +15,4 @@ public interface CategoryRepository extends JpaRepository<Categories, Long> {
     List<CategoryNameDto> findAllCategoryNames();
 
 }
+

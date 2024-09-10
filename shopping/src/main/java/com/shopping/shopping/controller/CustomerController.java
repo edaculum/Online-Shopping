@@ -18,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3002")  // Frontend URL'sini buraya yazın
+@CrossOrigin(origins = "http://localhost:3000")  // Frontend URL'sini buraya yazın
 @RequestMapping("/shopping/musteriler")
 public class CustomerController {
 
@@ -29,12 +29,6 @@ public class CustomerController {
         return ResponseEntity.ok(customerService.getAllByCustomers());
     }
 
-
- //    @GetMapping("/{email}")
-//    public ResponseEntity<GetCustomerRequest> getCustomerEmail(@PathVariable String email){
-//        //email ile müşteri bilgisini al ve DTO formatında geri döndür
-//        return ResponseEntity.ok(customerService.getByCustomerEmail(email));
-//    }
 
     @PostMapping("/kayitol")
     public ResponseEntity<?> signUp(@Valid @RequestBody CreateCustomerRequest customerRequest){

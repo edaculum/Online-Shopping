@@ -84,17 +84,6 @@ public class CustomerService {
     }
 
 
-
-//    public GetCustomerRequest getByCustomerEmail(String email) {
-//         // Müşteriyi veritabanından ID ile bul
-//        Customers customer = customerRepository.findByEmail(email).orElseThrow(()->new RuntimeException("Böyle bir müşteri bulunamadı!"));
-//
-//        // Müşteri bilgilerini DTO'ya dönüştür ve geri döndür
-//        return new GetCustomerRequest(customer.getName(),customer.getSurname(),customer.getEmail(),customer.getAdress(),customer.getCity());
-//
-//    }
-
-
     public Customers updateByCustomer(String email, UpdateCustomerRequest updateCustomerRequest) {
         // İlk olarak, güncellenecek olan müşteri kayıtlı mı kontrol ediliyor
         Customers existingCustomer = customerRepository.findByEmail(email)
@@ -111,7 +100,6 @@ public class CustomerService {
         return customerRepository.save(existingCustomer);
 
     }
-
 
     public void deleteByCustomer(Long id) {
 
