@@ -20,7 +20,7 @@ public class OrderController {
 
     //Sepetteki ürünleri siparişe çevirme
     // Kullanıcının sepetindeki tüm ürünler siparişe eklenir ve sipariş oluşturulur.
-    @PostMapping("/siparişOluştur")
+    @PostMapping("/siparisOlustur")
     public ResponseEntity<Orders> createOrderFromBasket(@RequestParam Long customerId){
         Orders order= orderService.createByOrderFromBasket(customerId);
         return new ResponseEntity<>(order, HttpStatus.CREATED);
@@ -35,7 +35,7 @@ public class OrderController {
     }
 
     //Sipariş detaylarını görüntüleme
-    @GetMapping("/siparişDetay/{orderId}")
+    @GetMapping("/siparisDetay/{orderId}")
     public ResponseEntity<Orders> getOrderDetails(@PathVariable Long orderId) {
         Orders order = orderService.getByOrderDetails(orderId);
         return new ResponseEntity<>(order, HttpStatus.OK);

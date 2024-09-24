@@ -5,9 +5,13 @@ import com.shopping.shopping.model.BasketItems;
 import com.shopping.shopping.model.Products;
 import com.shopping.shopping.repository.BasketItemsRepository;
 import com.shopping.shopping.repository.BasketRepository;
+import com.shopping.shopping.repository.CustomerRepository;
 import com.shopping.shopping.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -15,29 +19,36 @@ public class BasketService {
     private final BasketRepository basketRepository;
     private final BasketItemsRepository basketItemsRepository;
     private final ProductRepository productRepository;
+    private final CustomerRepository customerRepository;
 
     //Sepete ürün ekleme
-    public Basket addByProductToBasket(Long customerId, Long productId, int count) {
+    public Basket addOrUpdateByProductByBasket(Long customerId, Long productId, int count) {
         Basket basket = basketRepository.findByCustomerId(customerId)
-                .orElse(new Basket()); // Müşteri için sepet yoksa yeni sepet oluştur
+                .orElseGet(() -> createNewBasketForCustomer(customerId)); // Müşteri için sepet yoksa yeni sepet oluştur
 
-        //eklenmek istenen ürün veritabanında aranır.
-        Products product=productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Ürün bulunamadı!"));
+        // Mevcut ürünü sepette arıyoruz
+        Optional<BasketItems> existingItem = basket.getBasketItems().stream()
+                .filter(item -> item.getProduct().getId().equals(productId))
+                .findFirst();
 
-
-        //basketItem nesnesi oluşturularak, ürün ve adet bilgisi bu nesneye eklenir.
-        // Sepet ile ilişkilendirilir ve son olarak sepetin item listesine eklenir.
-        BasketItems basketItem= new BasketItems();
-        basketItem.setProduct(product);
-        basketItem.setCount(count);
-        basketItem.setPrice(product.getPrice());
-        basketItem.setBasket(basket);
-
-        basket.getBasketItems().add(basketItem);
+        if (existingItem.isPresent()) {
+            BasketItems item = existingItem.get();
+            item.setCount(item.getCount() + count);  // Mevcut ürün varsa sayısını günceller
+        } else {
+            // Yeni ürün sepete ekleniyor
+            Products product = productRepository.findById(productId)
+                    .orElseThrow(() -> new RuntimeException("Ürün bulunamadı!"));
+            BasketItems newItem = new BasketItems();
+            newItem.setProduct(product);
+            newItem.setCount(count);
+            newItem.setPrice(product.getPrice() * count);  // Toplam fiyat
+            newItem.setBasket(basket);
+            basket.getBasketItems().add(newItem);
+        }
 
         return basketRepository.save(basket);
     }
+
 
 
     //Sepetten ürün silme
@@ -52,7 +63,21 @@ public class BasketService {
                 .orElseThrow(()-> new RuntimeException("Sepet bulunamadı!"));
     }
 
-    public void clearBasket(Basket basket) {
-        basketItemsRepository.deleteAll(basket.getBasketItems());
+    // Sepeti temizleme
+    public void clearBasket(Long customerId) {
+        Basket basket = basketRepository.findByCustomerId(customerId)
+                .orElseThrow(() -> new RuntimeException("Sepet bulunamadı!"));
+        basket.getBasketItems().clear();  // Sepetteki tüm öğeleri temizler
+        basketRepository.save(basket);    // Sepeti boş olarak kaydeder
     }
+
+    //Yeni bir sepet oluşturma
+    private Basket createNewBasketForCustomer(Long customerId) {
+        Basket basket = new Basket();
+        basket.setCustomer(customerRepository.findById(customerId)
+                .orElseThrow(() -> new RuntimeException("Müşteri bulunamadı!")));
+        basket.setBasketItems(new ArrayList<>());  // Boş bir sepet oluşturulur
+        return basketRepository.save(basket);
+    }
+
 }

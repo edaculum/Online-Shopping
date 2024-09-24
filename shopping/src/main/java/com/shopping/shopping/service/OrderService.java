@@ -47,7 +47,7 @@ public class OrderService {
         }
 
         //Siparişten sonra sepeti temizle
-        basketService.clearBasket(basket);
+        basketService.clearBasket(customerId);
         return savedOrder;
     }
 
