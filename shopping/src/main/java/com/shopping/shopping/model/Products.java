@@ -1,5 +1,6 @@
 package com.shopping.shopping.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -36,6 +37,7 @@ public class Products {
     //ürünler kategorileri category_id sütunu aracılığıyla ilişkilendirir.
     @ManyToOne
     @JoinColumn(name = "category_id")
+    @JsonIgnoreProperties("products") // Kategorinin ürünler alanını serileştirmiyor
     private Categories category;
 
     //Bir ürün (Products) birden fazla sipariş öğesi (OrderItems) içerebilir.

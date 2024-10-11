@@ -1,6 +1,7 @@
 package com.shopping.shopping.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -24,6 +25,7 @@ public class Categories {
     // Bir kategori birden fazla ürüne sahip olabilir
     //mappedBy = "category", bu ilişkiyi yöneten alanın Products sınıfındaki category alanı olduğunu belirtir.
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Products> products;
 
 }

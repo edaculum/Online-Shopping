@@ -1,5 +1,7 @@
 package com.shopping.shopping.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -19,10 +21,12 @@ public class BasketItems {
     //Bir sepet öğesi bir sepete ait olabilir
     @ManyToOne
     @JoinColumn(name="basket_id")
+    @JsonIgnore
     private Basket basket;
 
     //Bir sepet öğesi bir ürüne ait olabilir
     @ManyToOne
     @JoinColumn(name = "product_id")
+    @JsonIgnoreProperties({"products"})
     private Products product;
 }

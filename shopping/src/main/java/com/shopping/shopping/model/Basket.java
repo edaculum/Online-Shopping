@@ -1,8 +1,9 @@
 package com.shopping.shopping.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.GeneratedColumn;
+
 
 import java.util.List;
 
@@ -21,5 +22,6 @@ public class Basket {
 
     //Bir sepet birden fazla öğe içerebilir
     @OneToMany(mappedBy = "basket",cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<BasketItems> basketItems;
 }

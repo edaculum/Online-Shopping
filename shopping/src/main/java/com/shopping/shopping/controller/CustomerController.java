@@ -1,11 +1,8 @@
 package com.shopping.shopping.controller;
 
 import com.shopping.shopping.mesaj.ResourceNotFoundException;
-import com.shopping.shopping.request.GetCustomerRequest;
+import com.shopping.shopping.request.*;
 import com.shopping.shopping.model.Customers;
-import com.shopping.shopping.request.CreateCustomerRequest;
-import com.shopping.shopping.request.LoginDto;
-import com.shopping.shopping.request.UpdateCustomerRequest;
 import com.shopping.shopping.service.CustomerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,7 +33,12 @@ public class CustomerController {
     public ResponseEntity<?> signUp(@Valid @RequestBody CreateCustomerRequest customerRequest){
         try {
             Customers newCustomer = customerService.createdByCustomer(customerRequest);
-            return ResponseEntity.ok(newCustomer);
+            return ResponseEntity.ok(new HashMap<String, Object>() {{
+                put("id", newCustomer.getId());
+                put("name", newCustomer.getName());
+                put("surname", newCustomer.getSurname());
+                put("message", "Kayıt başarılı");
+            }});
         } catch (ResourceNotFoundException e) {
             // Özel hata mesajını döndürüyoruz
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error", e.getMessage()));
@@ -47,17 +51,20 @@ public class CustomerController {
         }
     }
 
-
     @PostMapping("/girisyap")
     public ResponseEntity<?> login(@Valid @RequestBody LoginDto loginDto) {
-
         try{
             Customers loggedInCustomer= customerService.login(loginDto);
-            return ResponseEntity.ok(loggedInCustomer); //Başarılı Giriş
+            Map<String, Object> response = new HashMap<>();
+            response.put("id", loggedInCustomer.getId());
+            response.put("name", loggedInCustomer.getName()); // Kullanıcı adını ekliyoruz
+            response.put("surname", loggedInCustomer.getSurname()); //Kullanıcı soyadını ekliyoruz
+            return ResponseEntity.ok(response); // Başarılı Giriş
         }catch (RuntimeException e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("message", e.getMessage()));
         }
     }
+
 
     // name, surname, password, email güncellenir.
     @PutMapping("/{email}")
