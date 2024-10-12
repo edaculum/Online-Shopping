@@ -79,13 +79,13 @@ public class BasketService {
     // Sepeti görüntüleme
     public Basket getByBasketCustomerId(Long customerId) {
         return basketRepository.findByCustomerId(customerId)
-                .orElseThrow(() -> new RuntimeException("Sepet bulunamadı!"));
+                .orElseGet(() -> createNewBasketForCustomer(customerId));
     }
 
     // Sepeti temizleme
     public void clearBasket(Long customerId) {
         Basket basket = basketRepository.findByCustomerId(customerId)
-                .orElseThrow(() -> new RuntimeException("Sepet bulunamadı!"));
+                .orElseGet(() -> createNewBasketForCustomer(customerId));
         basket.getBasketItems().clear();
         basketRepository.save(basket);
     }
@@ -99,4 +99,5 @@ public class BasketService {
         return basketRepository.save(basket);
     }
 }
+
 

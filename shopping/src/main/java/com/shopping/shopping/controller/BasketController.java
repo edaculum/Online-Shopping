@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+
 @RestController
 @Slf4j  // Lombok'un Slf4j anotasyonu
 @RequestMapping("/shopping/sepet")
@@ -20,6 +22,7 @@ public class BasketController {
     // Sepete ürün ekleme veya güncelleme
     //kullanıcının ID'si (customerId), sepete eklenecek ürünün ID'si (productId), ve ürün adedi (count) istekle birlikte alınır.
     // sepet servisine gidip ürünü sepete ekler ve sonucunda sepetin güncel halini döner.
+    // Sepete ürün ekleme veya güncelleme
     @PostMapping("/sepeteEkle")
     public ResponseEntity<Basket> addOrUpdateProductInBasket(
             @RequestParam Long customerId,
@@ -27,15 +30,14 @@ public class BasketController {
             @RequestParam int count) {
 
         // Parametrelerin geçerliliğini kontrol et
-        if (customerId == null || productId == null || count <= 0) {
+        if (customerId == null || productId == null || count == 0) {// count != 0
             return ResponseEntity.badRequest().build(); // Geçersiz parametreler için 400 hatası
         }
 
         log.info("Sepete ekleme isteği alındı. CustomerId: {}, ProductId: {}, Count: {}", customerId, productId, count);
         Basket basket = basketService.addOrUpdateByProductByBasket(customerId, productId, count);
-        return new ResponseEntity<>(basket, HttpStatus.OK);// Güncel sepeti döndür
+        return new ResponseEntity<>(basket, HttpStatus.OK); // Güncel sepeti döndür
     }
-
 
     // Sepetten Ürün silme
     @DeleteMapping("/ürünüSil/{basketItemId}")
@@ -49,8 +51,15 @@ public class BasketController {
     // Müşterinin Sepetini görüntüleme
     @GetMapping("/{customerId}")
     public ResponseEntity<Basket> getBasketCustomerId(@PathVariable Long customerId) {
-        Basket basket = basketService.getByBasketCustomerId(customerId);
-        return new ResponseEntity<>(basket, HttpStatus.OK);
+        try {
+            Basket basket = basketService.getByBasketCustomerId(customerId);
+            return ResponseEntity.ok(basket);
+        } catch (RuntimeException e) {
+            // Eğer sepet bulunamazsa, boş bir sepet döndür
+            Basket emptyBasket = new Basket();
+            emptyBasket.setBasketItems(new ArrayList<>());
+            return ResponseEntity.ok(emptyBasket);
+        }
     }
 
     // Sepeti temizleme
@@ -62,3 +71,4 @@ public class BasketController {
 
 
 }
+

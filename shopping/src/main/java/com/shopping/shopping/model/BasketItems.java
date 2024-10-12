@@ -1,6 +1,6 @@
 package com.shopping.shopping.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -21,7 +21,7 @@ public class BasketItems {
     //Bir sepet öğesi bir sepete ait olabilir
     @ManyToOne
     @JoinColumn(name="basket_id")
-    @JsonIgnore
+    @JsonBackReference
     private Basket basket;
 
     //Bir sepet öğesi bir ürüne ait olabilir
