@@ -1,6 +1,7 @@
 package com.shopping.shopping.model;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -43,6 +44,7 @@ public class Customers {
     //Bir müşteri birden fazla siparişe sahip olabilir.
     // mappedBy = "customer", bu ilişkiyi yöneten alanın Orders sınıfındaki customer alanı olduğunu belirtir.
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+    @JsonManagedReference // Siparişlerle ilişkide yönetici referans
     private List<Orders> orders;
 
 

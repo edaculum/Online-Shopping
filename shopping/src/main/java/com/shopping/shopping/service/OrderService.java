@@ -2,64 +2,60 @@ package com.shopping.shopping.service;
 
 
 import com.shopping.shopping.model.*;
-import com.shopping.shopping.repository.CustomerRepository;
-import com.shopping.shopping.repository.OrderItemRepository;
-import com.shopping.shopping.repository.OrderRepository;
+import com.shopping.shopping.repository.*;
+import com.shopping.shopping.request.OrderRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final OrderItemRepository orderItemRepository;
-    private final BasketService basketService;
     private final CustomerRepository customerRepository;
+    private final BasketRepository basketRepository;
 
 
     //Sepetten sipariş oluşturma
-    public Orders createByOrderFromBasket(Long customerId) {
-        //Müşteri ve sepetin varlığını kontrol et
-        Customers customer= customerRepository.findById(customerId)
+    @Transactional
+    public Orders createByOrderFromBasket(Long customerId, OrderRequest orderRequest) {
+        Basket basket = basketRepository.findByCustomerId(customerId)
+                .orElseThrow(() -> new RuntimeException("Sepet bulunamadı!"));
+
+        if (basket.getBasketItems().isEmpty()) {
+            throw new RuntimeException("Sepetiniz boş!");
+        }
+
+        Customers customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new RuntimeException("Müşteri bulunamadı!"));
 
-        Basket basket= basketService.getByBasketCustomerId(customerId);
-
-        //Sipariş oluştur
-        Orders order= new Orders();
+        Orders order = new Orders();
         order.setCustomer(customer);
-        order.setDate(LocalDate.now().toString());
-        Orders savedOrder=orderRepository.save(order);
+        order.setAddress(orderRequest.getAddress());
+        order.setPaymentMethod(orderRequest.getPaymentMethod());
 
-        //Sepetteki her ürünü sipariş öğesine çevir
-        for(BasketItems basketItem : basket.getBasketItems()){
+        // Sepet öğelerini sipariş öğelerine dönüştürün
+        for (BasketItems basketItem : basket.getBasketItems()) {
             OrderItems orderItem = new OrderItems();
-
-            orderItem.setOrder(savedOrder);
+            orderItem.setOrder(order);
             orderItem.setProduct(basketItem.getProduct());
             orderItem.setCount(basketItem.getCount());
             orderItem.setPrice(basketItem.getPrice());
-            orderItemRepository.save(orderItem);
+            order.getOrderItems().add(orderItem);
         }
 
-        //Siparişten sonra sepeti temizle
-        basketService.clearBasket(customerId);
+        // Sipariş kaydet
+        Orders savedOrder = orderRepository.save(order);
+
+        // Sepeti temizle
+        basket.getBasketItems().clear();
+        basketRepository.save(basket);
+
         return savedOrder;
     }
 
 
-    //Müşterinin siparişlerini listeleme
-    public List<Orders> getOrdersByCustomerId(Long customerId) {
-        return orderRepository.findByCustomerId(customerId);
-    }
-
-    //Sipaeiş detaylarını görüntüleme
-    public Orders getByOrderDetails(Long orderId) {
-        return orderRepository.findById(orderId)
-                .orElseThrow(()-> new RuntimeException("Sipariş bulunamadı!"));
-    }
 }

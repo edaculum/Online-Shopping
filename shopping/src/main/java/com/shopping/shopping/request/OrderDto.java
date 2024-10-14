@@ -8,6 +8,7 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class OrderDto {
     private Long id;
     private String date;

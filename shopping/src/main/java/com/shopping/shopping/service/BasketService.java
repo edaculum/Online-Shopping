@@ -3,17 +3,24 @@ package com.shopping.shopping.service;
 
 import com.shopping.shopping.model.Basket;
 import com.shopping.shopping.model.BasketItems;
+import com.shopping.shopping.model.Categories;
 import com.shopping.shopping.model.Products;
 import com.shopping.shopping.repository.BasketItemsRepository;
 import com.shopping.shopping.repository.BasketRepository;
 import com.shopping.shopping.repository.CustomerRepository;
 import com.shopping.shopping.repository.ProductRepository;
+import com.shopping.shopping.request.BasketDto;
+import com.shopping.shopping.request.BasketItemDto;
+import com.shopping.shopping.request.CategoryNameDto;
+import com.shopping.shopping.request.ProductDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,11 +32,10 @@ public class BasketService {
     private final CustomerRepository customerRepository;
 
     // Sepete ürün ekleme/güncelleme
-    public Basket addOrUpdateByProductByBasket(Long customerId, Long productId, int count) {
+    public BasketDto addOrUpdateByProductByBasket(Long customerId, Long productId, int count) {
         Basket basket = basketRepository.findByCustomerId(customerId)
                 .orElseGet(() -> createNewBasketForCustomer(customerId));
 
-        // Mevcut ürünü sepette arıyoruz
         Optional<BasketItems> existingItem = basket.getBasketItems().stream()
                 .filter(item -> item.getProduct().getId().equals(productId))
                 .findFirst();
@@ -44,7 +50,7 @@ public class BasketService {
                 basket.getBasketItems().remove(item);
                 basketItemsRepository.delete(item);
             } else {
-                item.setPrice(product.getPrice() * item.getCount());  // Güncellenen toplam fiyat
+                item.setPrice(product.getPrice() * item.getCount());
             }
         } else {
             if (count > 0) {
@@ -59,27 +65,29 @@ public class BasketService {
             }
         }
 
-        return basketRepository.save(basket);
+        Basket savedBasket = basketRepository.save(basket);
+        return convertToDTO(savedBasket);
     }
 
+
     // Sepetten ürün silme
-    public Basket removeByProductFromBasket(Long basketItemId) {
+    public BasketDto removeByProductFromBasket(Long basketItemId) {
         BasketItems item = basketItemsRepository.findById(basketItemId)
                 .orElseThrow(() -> new RuntimeException("Sepet öğesi bulunamadı!"));
 
         Basket basket = item.getBasket();
-        basketItemsRepository.delete(item); // Ürünü sil
-
-        // Sepet öğesini listeden çıkarın
+        basketItemsRepository.delete(item);
         basket.getBasketItems().removeIf(basketItem -> basketItem.getId().equals(basketItemId));
 
-        return basketRepository.save(basket); // Güncel sepeti döndür
+        Basket savedBasket = basketRepository.save(basket);
+        return convertToDTO(savedBasket);
     }
 
     // Sepeti görüntüleme
-    public Basket getByBasketCustomerId(Long customerId) {
-        return basketRepository.findByCustomerId(customerId)
+    public BasketDto getByBasketCustomerId(Long customerId) {
+        Basket basket = basketRepository.findByCustomerId(customerId)
                 .orElseGet(() -> createNewBasketForCustomer(customerId));
+        return convertToDTO(basket);
     }
 
     // Sepeti temizleme
@@ -97,6 +105,42 @@ public class BasketService {
                 .orElseThrow(() -> new RuntimeException("Müşteri bulunamadı!")));
         basket.setBasketItems(new ArrayList<>());  // Boş bir sepet oluşturulur
         return basketRepository.save(basket);
+    }
+
+
+    // Basket'i DTO'ya dönüştürme
+    private BasketDto convertToDTO(Basket basket) {
+        BasketDto basketDTO = new BasketDto();
+        basketDTO.setId(basket.getId());
+        basketDTO.setCustomerId(basket.getCustomer().getId());
+
+        List<BasketItemDto> basketItemDTOs = basket.getBasketItems().stream().map(item -> {
+            BasketItemDto itemDTO = new BasketItemDto();
+            itemDTO.setProductId(item.getProduct().getId());
+            itemDTO.setPrice(item.getPrice());
+            itemDTO.setCount(item.getCount());
+
+            ProductDto productDTO = new ProductDto();
+            Products product = item.getProduct();
+            productDTO.setId(product.getId());
+            productDTO.setName(product.getName());
+            productDTO.setPrice(product.getPrice());
+            productDTO.setDescription(product.getDescription());
+            productDTO.setStock(product.getStock());
+            productDTO.setImageurl(product.getImageurl());
+
+            CategoryNameDto categoryDTO = new CategoryNameDto();
+            Categories category = product.getCategory();
+            categoryDTO.setId(category.getId());
+            categoryDTO.setName(category.getName());
+
+            itemDTO.setProduct(productDTO);
+
+            return itemDTO;
+        }).collect(Collectors.toList());
+
+        basketDTO.setBasketItems(basketItemDTOs);
+        return basketDTO;
     }
 }
 

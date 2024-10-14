@@ -1,6 +1,7 @@
 package com.shopping.shopping.controller;
 
-import com.shopping.shopping.model.Basket;
+
+import com.shopping.shopping.request.BasketDto;
 import com.shopping.shopping.service.BasketService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,12 +20,13 @@ public class BasketController {
     private final BasketService basketService;
 
 
+
     // Sepete ürün ekleme veya güncelleme
     //kullanıcının ID'si (customerId), sepete eklenecek ürünün ID'si (productId), ve ürün adedi (count) istekle birlikte alınır.
     // sepet servisine gidip ürünü sepete ekler ve sonucunda sepetin güncel halini döner.
     // Sepete ürün ekleme veya güncelleme
     @PostMapping("/sepeteEkle")
-    public ResponseEntity<Basket> addOrUpdateProductInBasket(
+    public ResponseEntity<BasketDto> addOrUpdateProductInBasket(
             @RequestParam Long customerId,
             @RequestParam Long productId,
             @RequestParam int count) {
@@ -35,28 +37,28 @@ public class BasketController {
         }
 
         log.info("Sepete ekleme isteği alındı. CustomerId: {}, ProductId: {}, Count: {}", customerId, productId, count);
-        Basket basket = basketService.addOrUpdateByProductByBasket(customerId, productId, count);
-        return new ResponseEntity<>(basket, HttpStatus.OK); // Güncel sepeti döndür
+        BasketDto basketDto = basketService.addOrUpdateByProductByBasket(customerId, productId, count);
+        return new ResponseEntity<>(basketDto, HttpStatus.OK); // Güncel sepeti döndür
     }
 
     // Sepetten Ürün silme
     @DeleteMapping("/ürünüSil/{basketItemId}")
-    public ResponseEntity<Basket> removeProductFromBasket(@PathVariable Long basketItemId) {
-        Basket basket = basketService.removeByProductFromBasket(basketItemId);
-        return new ResponseEntity<>(basket, HttpStatus.OK); // Güncel sepeti döndür
+    public ResponseEntity<BasketDto> removeProductFromBasket(@PathVariable Long basketItemId) {
+        BasketDto basketDto = basketService.removeByProductFromBasket(basketItemId);
+        return new ResponseEntity<>(basketDto, HttpStatus.OK); // Güncel sepeti döndür
     }
 
 
 
     // Müşterinin Sepetini görüntüleme
     @GetMapping("/{customerId}")
-    public ResponseEntity<Basket> getBasketCustomerId(@PathVariable Long customerId) {
+    public ResponseEntity<BasketDto> getBasketCustomerId(@PathVariable Long customerId) {
         try {
-            Basket basket = basketService.getByBasketCustomerId(customerId);
-            return ResponseEntity.ok(basket);
+            BasketDto basketDto = basketService.getByBasketCustomerId(customerId);
+            return ResponseEntity.ok(basketDto);
         } catch (RuntimeException e) {
             // Eğer sepet bulunamazsa, boş bir sepet döndür
-            Basket emptyBasket = new Basket();
+            BasketDto emptyBasket = new BasketDto();
             emptyBasket.setBasketItems(new ArrayList<>());
             return ResponseEntity.ok(emptyBasket);
         }

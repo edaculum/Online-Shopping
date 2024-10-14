@@ -8,6 +8,7 @@ import lombok.Data;
 @Entity
 @Table(name="ec1_basket_items")
 @Data
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) // Aşırı JSON döngülerini kırmak için
 public class BasketItems {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,12 +22,11 @@ public class BasketItems {
     //Bir sepet öğesi bir sepete ait olabilir
     @ManyToOne
     @JoinColumn(name="basket_id")
-    @JsonBackReference
+    @JsonBackReference // Sepet ile ilişkide geri referans
     private Basket basket;
 
     //Bir sepet öğesi bir ürüne ait olabilir
     @ManyToOne
     @JoinColumn(name = "product_id")
-    @JsonIgnoreProperties({"products"})
     private Products product;
 }

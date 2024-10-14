@@ -1,9 +1,6 @@
 package com.shopping.shopping.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
@@ -11,8 +8,10 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class BasketDto {
     private Long id;
     private Long customerId;
     private List<BasketItemDto> basketItems;
 }
+

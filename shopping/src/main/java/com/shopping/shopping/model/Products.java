@@ -1,5 +1,6 @@
 package com.shopping.shopping.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -9,6 +10,7 @@ import java.util.List;
 @Entity
 @Table(name = "ec1_products")
 @Data
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) // Mevcut diğer JSON ayarları
 public class Products {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,6 +45,7 @@ public class Products {
     //Bir ürün (Products) birden fazla sipariş öğesi (OrderItems) içerebilir.
     // her Products (Ürün) nesnesinin birden fazla OrderItems (Sipariş Öğesi) nesnesine sahip olabileceğini belirtir.
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @JsonIgnore // Döngüyü kırmak için orderItems'ı serileştirmeyi durdur
     private List<OrderItems> orderItems;
 
 
