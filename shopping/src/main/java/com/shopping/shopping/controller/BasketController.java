@@ -64,6 +64,13 @@ public class BasketController {
         }
     }
 
+    // Müşterinin adresini getirme
+    @GetMapping("/customers/{customerId}/adress")
+    public ResponseEntity<String> getCustomerAddress(@PathVariable Long customerId) {
+        String adress = basketService.getCustomerAddress(customerId);
+        return ResponseEntity.ok(adress);
+    }
+
     // Sepeti temizleme
     @DeleteMapping("/sepetiTemizle/{customerId}")
     public ResponseEntity<Void> clearBasket(@PathVariable Long customerId) {

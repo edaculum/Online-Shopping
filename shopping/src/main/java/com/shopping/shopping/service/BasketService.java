@@ -1,10 +1,7 @@
 // src/main/java/com/shopping/shopping/service/BasketService.java
 package com.shopping.shopping.service;
 
-import com.shopping.shopping.model.Basket;
-import com.shopping.shopping.model.BasketItems;
-import com.shopping.shopping.model.Categories;
-import com.shopping.shopping.model.Products;
+import com.shopping.shopping.model.*;
 import com.shopping.shopping.repository.BasketItemsRepository;
 import com.shopping.shopping.repository.BasketRepository;
 import com.shopping.shopping.repository.CustomerRepository;
@@ -89,6 +86,15 @@ public class BasketService {
                 .orElseGet(() -> createNewBasketForCustomer(customerId));
         return convertToDTO(basket);
     }
+
+    //Müşterinin adresini getirme
+    public String getCustomerAddress(Long customerId) {
+        Customers customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new RuntimeException("Müşteri bulunamadı!"));
+
+        return customer.getAdress(); // Müşterinin adresini döndür
+    }
+
 
     // Sepeti temizleme
     public void clearBasket(Long customerId) {
