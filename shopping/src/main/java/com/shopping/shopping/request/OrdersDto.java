@@ -1,19 +1,16 @@
 package com.shopping.shopping.request;
 
+
 import lombok.*;
-
 import java.time.LocalDateTime;
-import java.util.List;
 
+// Sipariş Listeleme için DTO
 @Data
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderDto {
+public class OrdersDto {
     private Long id;
     private LocalDateTime date;
-    private Long customerId;
-    private List<OrderItemDto> orderItems;
-
 }

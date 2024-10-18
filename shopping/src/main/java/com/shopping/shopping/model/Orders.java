@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class Orders {
     private Long id;
 
     @Column(name = "date")
-    private String date;
+    private LocalDateTime date; // String yerine LocalDateTime kullanıyoruz
 
     // Bir sipariş bir müşteriye ait olabilir
     @ManyToOne
@@ -32,8 +33,9 @@ public class Orders {
     @JsonBackReference // Müşteri ile ilişkide geri referans
     private Customers customer;
 
-    private String address;
-    private String paymentMethod;
+    private String address; //siparişin verildiği adres
+    private String paymentMethod; //sipariş verilirken ödeme şekli
+    private Double totalPrice;// sipariş verilen ürünlerin toplam fiyatı
 
     // Bir sipariş birden fazla sipariş öğesini içerebilir
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
