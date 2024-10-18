@@ -42,7 +42,7 @@ public class BasketController {
     }
 
     // Sepetten Ürün silme
-    @DeleteMapping("/ürünüSil/{basketItemId}")
+    @DeleteMapping("/urunuSil/{basketItemId}")
     public ResponseEntity<BasketDto> removeProductFromBasket(@PathVariable Long basketItemId) {
         BasketDto basketDto = basketService.removeByProductFromBasket(basketItemId);
         return new ResponseEntity<>(basketDto, HttpStatus.OK); // Güncel sepeti döndür

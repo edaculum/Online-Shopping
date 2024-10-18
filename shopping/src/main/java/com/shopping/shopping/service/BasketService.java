@@ -116,6 +116,7 @@ public class BasketService {
 
         List<BasketItemDto> basketItemDTOs = basket.getBasketItems().stream().map(item -> {
             BasketItemDto itemDTO = new BasketItemDto();
+            itemDTO.setBasketItemId(item.getId()); // Burada basketItemId ekleniyor
             itemDTO.setProductId(item.getProduct().getId());
             itemDTO.setPrice(item.getPrice());
             itemDTO.setCount(item.getCount());

@@ -9,6 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 public class BasketItemDto {
     private Long productId;
+    private Long basketItemId;
     private Integer count;
     private Double price;
     private ProductDto product;
