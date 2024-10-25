@@ -2,14 +2,11 @@ package com.shopping.shopping.service;
 
 import com.shopping.shopping.mesaj.ResourceNotFoundException;
 import com.shopping.shopping.model.Cities;
-import com.shopping.shopping.request.CreateCustomerRequest;
-import com.shopping.shopping.request.GetCustomerRequest;
+import com.shopping.shopping.request.*;
 import com.shopping.shopping.model.Customers;
 import com.shopping.shopping.repository.CustomerRepository;
 import com.shopping.shopping.repository.CitiesRepository;
 
-import com.shopping.shopping.request.LoginDto;
-import com.shopping.shopping.request.UpdateCustomerRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -29,11 +26,13 @@ public class CustomerService {
     public List<GetCustomerRequest> getAllByCustomers() {
         return customerRepository.findAll().stream().map(customer -> {
             Long cityId = customer.getCity().getId(); // City nesnesinin ID'sini alıyoruz
+            String cityName = customer.getCity().getName(); // City nesnesinin adını alıyoruz
             return new GetCustomerRequest(
                     customer.getName(),
                     customer.getSurname(),
                     customer.getEmail(),
                     cityId, // cityId olarak döndürdük
+                    cityName, // cityName olarak döndürdük
                     customer.getAdress()
             );
         }).collect(Collectors.toList());
@@ -84,23 +83,41 @@ public class CustomerService {
     }
 
 
+    // Kullanıcının bilgilerini getir
+    public GetCustomerResponse getCustomerByEmail(String email) {
+        Customers customer = customerRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found with email: " + email));
+
+        // DTO'ya dönüştürme
+        GetCustomerResponse response = new GetCustomerResponse();
+        response.setName(customer.getName());
+        response.setSurname(customer.getSurname());
+        response.setEmail(customer.getEmail());
+        response.setAddress(customer.getAdress());  // Burayı düzeltin
+        if (customer.getCity() != null) {
+            response.setCityName(customer.getCity().getName());  // Şehir adı
+            response.setCityId(customer.getCity().getId());  // Eğer şehir ID'sini de almak istiyorsanız
+        }
+        return response;
+    }
+
+
+    // Müşteriyi güncelle
     public Customers updateByCustomer(String email, UpdateCustomerRequest updateCustomerRequest) {
-        // İlk olarak, güncellenecek olan müşteri kayıtlı mı kontrol ediliyor
         Customers existingCustomer = customerRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found with email: " + email));
 
+        Cities city = cityRepository.findById(updateCustomerRequest.getCityId())
+                .orElseThrow(() -> new RuntimeException("*Geçersiz şehir ID'si"));
 
-        // Gelen request içindeki verilerle mevcut müşteri bilgilerini güncelliyoruz
         existingCustomer.setName(updateCustomerRequest.getName());
         existingCustomer.setSurname(updateCustomerRequest.getSurname());
-        existingCustomer.setPassword(updateCustomerRequest.getPassword());
         existingCustomer.setEmail(updateCustomerRequest.getEmail());
+        existingCustomer.setAdress(updateCustomerRequest.getAddress());
+        existingCustomer.setCity(city);  // Şehir bilgisini güncelle
 
-        // Güncellenmiş müşteriyi veritabanına kaydediyoruz
         return customerRepository.save(existingCustomer);
-
     }
-
     public void deleteByCustomer(Long id) {
 
         //müşteri kaydının veritabanında mevcut olup olmadığını kontrol eder ve sadece müşteri mevcutsa silme işlemini gerçekleştirir.

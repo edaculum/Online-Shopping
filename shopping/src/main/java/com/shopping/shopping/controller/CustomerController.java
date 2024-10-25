@@ -66,13 +66,29 @@ public class CustomerController {
     }
 
 
-    // name, surname, password, email güncellenir.
-    @PutMapping("/{email}")
-    public ResponseEntity<Customers> updateCustomer( @PathVariable String email,@RequestBody UpdateCustomerRequest updateCustomerRequest ){
-        Customers updatedCustomer = customerService.updateByCustomer(email,updateCustomerRequest);
-        return ResponseEntity.ok(updatedCustomer);
-
+    // Kullanıcının bilgilerini getir
+    @GetMapping("/me")
+    public ResponseEntity<GetCustomerResponse> getCustomerInfo(@RequestParam String email) {
+        GetCustomerResponse customerResponse = customerService.getCustomerByEmail(email);
+        if (customerResponse != null) {
+            return ResponseEntity.ok(customerResponse);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
+
+    // Kullanıcının bilgilerini güncelle
+    @PutMapping("/me")
+    public ResponseEntity<Customers> updateCustomerInfo(@RequestParam String email, @RequestBody UpdateCustomerRequest updateCustomerRequest) {
+        Customers updatedCustomer = customerService.updateByCustomer(email, updateCustomerRequest);
+        if (updatedCustomer != null) {
+            return ResponseEntity.ok(updatedCustomer);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+
+
 
     //Belirli bir id'ye sahip olan müşteriyi siler.
     @DeleteMapping("/{id}")
