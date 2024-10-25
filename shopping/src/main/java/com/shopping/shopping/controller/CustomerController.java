@@ -68,10 +68,19 @@ public class CustomerController {
 
     // Kullanıcının bilgilerini getir
     @GetMapping("/me")
-    public ResponseEntity<GetCustomerResponse> getCustomerInfo(@RequestParam String email) {
+    public ResponseEntity<Map<String, Object>> getCustomerInfo(@RequestParam String email) {
         GetCustomerResponse customerResponse = customerService.getCustomerByEmail(email);
         if (customerResponse != null) {
-            return ResponseEntity.ok(customerResponse);
+            Map<String, Object> response = new HashMap<>();
+            response.put("name", customerResponse.getName());
+            response.put("surname", customerResponse.getSurname());
+            response.put("email", customerResponse.getEmail());
+            response.put("address", customerResponse.getAddress());
+            response.put("city", new HashMap<String, Object>() {{
+                put("id", customerResponse.getCityId());
+                put("name", customerResponse.getCityName());
+            }});
+            return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }

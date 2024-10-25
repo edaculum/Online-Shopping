@@ -94,10 +94,13 @@ public class CustomerService {
         response.setSurname(customer.getSurname());
         response.setEmail(customer.getEmail());
         response.setAddress(customer.getAdress());  // Burayı düzeltin
+
+        // Şehir bilgilerini DTO'ya ekleyin
         if (customer.getCity() != null) {
-            response.setCityName(customer.getCity().getName());  // Şehir adı
-            response.setCityId(customer.getCity().getId());  // Eğer şehir ID'sini de almak istiyorsanız
+            response.setCityId(customer.getCity().getId());  // Şehir ID'sini ekle
+            response.setCityName(customer.getCity().getName());  // Şehir adını ekle
         }
+
         return response;
     }
 

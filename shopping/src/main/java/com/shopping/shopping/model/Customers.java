@@ -36,6 +36,7 @@ public class Customers {
     // Şehir referansı
     @ManyToOne
     @JoinColumn(name = "city_id", nullable = false) // Şehir ID'sine referans
+    @JsonManagedReference // Müşteri ile şehir arasındaki döngüyü engellemek için
     private Cities city;
 
     @Column(name = "adress", nullable = false)
