@@ -1,5 +1,6 @@
 package com.shopping.shopping.controller;
 
+
 import com.shopping.shopping.request.ProductDto;
 import com.shopping.shopping.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import java.util.List;
 public class ProductController {
     private final ProductService productService;
 
+
     // Tüm ürünleri getir
     @GetMapping("/all")
     public List<ProductDto> getAllProducts() {
@@ -25,6 +27,11 @@ public class ProductController {
     public List<ProductDto> getProductsByCategory(@PathVariable Long categoryId){
         return productService.getProductsByCategory(categoryId);
 
+    }
+
+    @GetMapping("/{id}")
+    public ProductDto getProductById(@PathVariable Long id) {
+        return productService.getProductById(id); // Service'teki metot çağrılıyor
     }
 
 

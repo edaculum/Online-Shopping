@@ -39,4 +39,11 @@ public class ProductService {
                 product.getImageurl()
         );
     }
+
+    public ProductDto getProductById(Long id) {
+        Products product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+        return convertToDto(product);
+    }
+
 }
