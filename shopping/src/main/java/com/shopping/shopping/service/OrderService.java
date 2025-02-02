@@ -22,7 +22,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final CustomerRepository customerRepository;
     private final BasketRepository basketRepository;
-
+    private final ProductRepository productRepository;  // Product repository eklendi
 
     //Sepetten sipariş oluşturma
     @Transactional
@@ -50,6 +50,13 @@ public class OrderService {
         // Toplam fiyatı hesapla
         double totalPrice = 0.0;
         for (BasketItems basketItem : basket.getBasketItems()) {
+            Products product = basketItem.getProduct(); // Sepet öğesindeki ürünü al
+
+            // Ürünün mevcut stoğunu kontrol et
+            if (product.getStock() < basketItem.getCount()) {
+                throw new RuntimeException("Yetersiz stok: " + product.getName());
+            }
+
             OrderItems orderItem = new OrderItems();
             orderItem.setOrder(order);
             orderItem.setProduct(basketItem.getProduct());
@@ -58,6 +65,10 @@ public class OrderService {
 
             totalPrice += (basketItem.getCount() * basketItem.getPrice()); // Toplam fiyatı güncelle
             order.getOrderItems().add(orderItem);
+
+            // Ürün stokunu güncelle
+            product.setStock(product.getStock() - basketItem.getCount());  // Stoktaki ürün sayısını düşür
+            productRepository.save(product);  // Ürünü güncelle
         }
         order.setTotalPrice(totalPrice); // Toplam fiyatı sipariş nesnesine ekle
 

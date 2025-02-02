@@ -1,11 +1,12 @@
 spring:
   datasource:
-    url: jdbc:postgresql://86.106.182.47:5432/edict_playground
+    url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
-    password: w2pediaMalatya
+    password: 95628
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+
 
