@@ -3,7 +3,6 @@
 Bu proje, **Spring Boot** ve **React** kullanılarak geliştirilmiş bir **Java tabanlı e-ticaret web uygulamasıdır**.  
 Uygulama, temel e-ticaret işlemlerini (ürün, kategori, müşteri ve sipariş yönetimi) içerir ve veriler **PostgreSQL** veritabanında tutulur.
 
-Projeyi klonlayarak backend’i ve frontend’i çalıştırabilir ve tarayıcı veya Postman üzerinden test edebilirsiniz.
 
 ---
 
